@@ -13,6 +13,7 @@ include macros.inc
     count1      DWORD 0
     total       DWORD ?
     input       DWORD ?
+    Trace_var       DWORD ?
 
     ; used to generate product matrix
     working_row DWORD 0    ; (0=1st row, 12=2nd row, 24=3rd row)
@@ -64,7 +65,7 @@ calcSize ENDP
 
 setvalue PROC
     mwrite "Enter Value: "
-    call readDec
+    call readint
     mov [esi], eax
     ret
 setvalue ENDP
@@ -340,6 +341,51 @@ pop ebp
 ret 8
 SubMatrix ENDP
 
+Trace Proc Matrix : DWORD
+ push ecx
+    
+    mov ecx, matrix_size
+    mov edx, 0
+    mov row_counter, 0 ; set to first row
+    mov trace_var, 0
+
+NewRow:
+    mov col_counter, 0 ; set to first column
+
+NewCol:
+
+    mov edx, col_counter
+    cmp edx, row_counter
+    JE Equals
+    
+    Jmp NotEquals
+
+    Equals:
+        mov edx, [Matrix]
+        mov ebx, [edx]
+        add trace_var, ebx
+      
+
+    NotEquals:
+    add Matrix, 4 ; next data member of array
+
+    inc col_counter ; did we reach the last column
+    cmp col_counter, ecx ; of the row?
+    jle NewCol ; if not, add another element
+
+
+    inc row_counter ; new row
+
+    cmp row_counter, ecx ; stop at 3rd row
+    jle NewRow
+
+    pop ecx
+
+    mov eax,trace_var
+
+ret
+Trace Endp
+
 menu proc
 
     call	Clrscr
@@ -394,7 +440,9 @@ menu proc
     call crlf
     mwrite "Option: 3, Matrix Subtraction"
     call Crlf
-    mwrite "Option: 4, Exit"
+    mwrite "Option: 4, Calculate Trace"
+    call crlf
+    mwrite "Option: 5, Exit"
     call crlf
 
     mwrite"Enter Choice:  "
@@ -412,6 +460,9 @@ menu proc
     cmp input, 3
     JE Subtraction
 
+    cmp input, 4
+    JE Traces
+     
     jmp END1
 
     Multiplicator:
@@ -435,11 +486,25 @@ menu proc
     call AddMatrix
     call crlf
 
+
+    jmp EndofProc
+
+    Traces:
+    mwrite "Trace of A: "
+    INVOKE Trace, ADDR MatA
+    call writeint
+    call crlf
+    mwrite "Trace of B: "
+    INVOKE Trace, ADDR MatB
+    call writeint
+    call crlf
+
     jmp EndofProc
 
     EndofProc:
     call readChar
     jmp Top
+
 
     End1:
 
@@ -448,12 +513,12 @@ menu endp
 
 main proc
 
-mov eax, Blue+(gray*16)
-call SetTextColor
-call crlf
-call clrscr
-
-call menu
+    mov eax, Blue+(gray*16)
+    call SetTextColor
+    call crlf
+    call clrscr
+    
+    call menu
 
 exit 
 main ENDP
