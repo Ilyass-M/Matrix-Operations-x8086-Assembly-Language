@@ -448,6 +448,11 @@ menu endp
 
 main proc
 
+mov eax, Blue+(gray*16)
+call SetTextColor
+call crlf
+call clrscr
+
 call menu
 
 exit 
