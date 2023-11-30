@@ -389,7 +389,7 @@ Trace Endp
 menu proc
 
     call	Clrscr
-    mwrite "Welcome to the Matric Multiplicator"
+    mwrite "Welcome to the Matrix Multiplicator"
     call crlf
     mwrite "Enter Size Of Matrix (2 = [3x3] & 9 = [10x10]), Option: "
      
