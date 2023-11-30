@@ -237,7 +237,7 @@ NewCol:
     jle NewCol
 
 
-    call Crlf ; new row
+    call Crlf 
     add working_row, ecx
 
     mov eax, working_row 
