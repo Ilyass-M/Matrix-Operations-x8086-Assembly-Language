@@ -6,16 +6,15 @@ include macros.inc
     MatB        DWORD 50 dup(0)   ; matrix B    
     num_rows    DWORD 0
     num_cols    DWORD 0    
-    col_counter DWORD 0    ; inner loop counter
-    row_counter DWORD 0    ; outer loop counter
-    counter     DWORD 0    ; this will always come in handy
+    col_counter DWORD 0    
+    row_counter DWORD 0    
+    counter     DWORD 0    
     sum         DWORD 0
     count1      DWORD 0
     total       DWORD ?
     input       DWORD ?
     Trace_var       DWORD ?
 
-    ; used to generate product matrix
     working_row DWORD 0    ; (0=1st row, 12=2nd row, 24=3rd row)
     working_col DWORD 0    ; (0=1st col, 4=2nd col, 8=3rd col)
 
@@ -92,7 +91,6 @@ InputB ENDP
 
 printvalue PROC
 
-    ; Print a value neatly
     push eax
     call WriteInt
     mov al, ' '
@@ -106,25 +104,24 @@ inputMatrix PROC
     push ecx
     mov ecx, matrix_size
 
-    ; Traverse each row of the matrix
 
-    mov row_counter, 0 ; set to first row
+    mov row_counter, 0 
 
 NewRow:
-    mov col_counter, 0 ; set to first column
+    mov col_counter, 0 
 
 NewCol:
 
-    call setvalue ; put value in location
-    add esi, 4 ; next data member of array
+    call setvalue 
+    add esi, 4 
 
-    inc col_counter ; did we reach the last column
-    cmp col_counter, ecx ; of the row?
-    jle NewCol ; if not, add another element
+    inc col_counter 
+    cmp col_counter, ecx 
+    jle NewCol 
 
-    inc row_counter ; new row
+    inc row_counter 
 
-    cmp row_counter, ecx ; stop at 3rd row
+    cmp row_counter, ecx 
     jle NewRow
 
     pop ecx
@@ -136,26 +133,25 @@ DisplayMatrix PROC
     push ecx
     mov ecx, matrix_size
 
-    call Crlf ; line feed
-    mov row_counter, 0 ; set to first row
+    call Crlf 
+    mov row_counter, 0 
 
 NewRow:
-    mov col_counter, 0 ; set to first column
+    mov col_counter, 0 
 
 NewCol:
 
     mov eax, [esi]
-    call printvalue ; print value while we're here
-    add esi, 4 ; next data member of array
+    call printvalue 
+    add esi, 4 
 
-    inc col_counter ; did we reach the last column
-    cmp col_counter, ecx ; of the row?
-    jle NewCol ; if not, add another element
+    inc col_counter 
+    cmp col_counter, ecx 
+    jle NewCol 
 
     call Crlf
-    inc row_counter ; new row
-
-    cmp row_counter, ecx ; stop at 3rd row
+    inc row_counter 
+    cmp row_counter, ecx 
     jle NewRow
 
     pop ecx
@@ -171,8 +167,8 @@ addElements PROC
     mov ecx, matrix_size
     mov edx, nextRow
 
-    mov eax, working_row ; row_counter = working_row
-    mov ebx, working_col ; col_counter = working_col
+    mov eax, working_row 
+    mov ebx, working_col 
 
     mov row_counter, eax
     mov col_counter, ebx
@@ -181,20 +177,17 @@ addElements PROC
     mov sum, 0
 
 Next:
-    ; -- begin loop --
 
-    call multiplyelements ; multiply AxBx
-    add sum, eax ; accumulate the sum
+    call multiplyelements 
+    add sum, eax 
 
-    add row_counter, 4 ; next elements
+    add row_counter, 4 
     add col_counter, edx
 
-    inc counter ; increment loop counter
+    inc counter
 
-    cmp counter, ecx ; stop at 3rd row
+    cmp counter, ecx
     jle Next
-
-    ; -- end loop --
 
     mov eax, sum
 
@@ -204,18 +197,17 @@ Next:
 addElements ENDP
 
 multiplyelements PROC
-    ; Multiply Ax and Bx
     push edx
 
-    mov esi, OFFSET MatA ; find matrix A
-    add esi, row_counter ; find location we want
-    mov eax, [esi] ; put into eax
+    mov esi, OFFSET MatA 
+    add esi, row_counter
+    mov eax, [esi] 
 
-    mov esi, OFFSET MatB ; find matrix B
-    add esi, col_counter ; find location we want
-    mov ebx, [esi] ; put into ebx
+    mov esi, OFFSET MatB 
+    add esi, col_counter 
+    mov ebx, [esi] 
 
-    mul ebx ; do multiplication
+    mul ebx 
 
     pop edx
     ret
@@ -225,33 +217,30 @@ multiplymatrix PROC USES ecx
 
     mov ecx, nextRow
 
-    ; Do matrix multiplication
-
     call Crlf
-    mov working_row, 0 ; start on the first row
+    mov working_row, 0
 
 NewRow:
 
-    mov working_col, 0 ; go to the first column
+    mov working_col, 0 
 
 NewCol:
-    ; -- begin inner loop --
+    
 
     call addElements ; do all the addition and multiplication
-    call printvalue ; print value
+    call printvalue 
 
-    add working_col, 4 ; get ready to do the next column
+    add working_col, 4 
 
-    mov eax, working_col ; did we reach the end of a row?
+    mov eax, working_col
     cmp eax, num_cols
     jle NewCol
 
-    ; -- end inner loop --
 
     call Crlf ; new row
     add working_row, ecx
 
-    mov eax, working_row ; did we reach the last row?
+    mov eax, working_row 
     cmp eax, num_rows
     jle NewRow
 
@@ -265,15 +254,15 @@ push ebp
 mov ebp, esp
 mov ecx, matrix_size
 
-mov esi,[ebp+12] ;storing offset of MatA in esi
-mov edi,[ebp+8]  ;storing offset of MatB in edi
+mov esi,[ebp+12] 
+mov edi,[ebp+8]  
 
 call Crlf
 
-mov row_counter, 0 ; set to first row
+mov row_counter, 0 
 
 NewRow:
-    mov col_counter, 0 ; set to first column
+    mov col_counter, 0 
 
 NewCol:
 
@@ -291,7 +280,7 @@ NewCol:
     jle NewCol
 
     call Crlf
-    inc row_counter ; new row
+    inc row_counter 
 
     cmp row_counter, ecx 
     jle NewRow
@@ -306,15 +295,14 @@ push ebp
 mov ebp, esp
 mov ecx, matrix_size
 
-mov esi,[ebp+12] ;storing offset of MatA in esi
-mov edi,[ebp+8]  ;storing offset of MatB in edi
-
+mov esi,[ebp+12]
+mov edi,[ebp+8] 
 call Crlf
 
-mov row_counter, 0 ; set to first row
+mov row_counter, 0 
 
 NewRow:
-    mov col_counter, 0 ; set to first column
+    mov col_counter, 0 
 
 NewCol:
 
@@ -332,7 +320,7 @@ NewCol:
     jle NewCol
 
     call Crlf
-    inc row_counter ; new row
+    inc row_counter 
 
     cmp row_counter, ecx 
     jle NewRow
@@ -346,11 +334,11 @@ Trace Proc Matrix : DWORD
     
     mov ecx, matrix_size
     mov edx, 0
-    mov row_counter, 0 ; set to first row
+    mov row_counter, 0 
     mov trace_var, 0
 
 NewRow:
-    mov col_counter, 0 ; set to first column
+    mov col_counter, 0 
 
 NewCol:
 
@@ -367,16 +355,16 @@ NewCol:
       
 
     NotEquals:
-    add Matrix, 4 ; next data member of array
+    add Matrix, 4 
 
-    inc col_counter ; did we reach the last column
-    cmp col_counter, ecx ; of the row?
-    jle NewCol ; if not, add another element
+    inc col_counter 
+    cmp col_counter, ecx 
+    jle NewCol 
 
 
-    inc row_counter ; new row
+    inc row_counter
 
-    cmp row_counter, ecx ; stop at 3rd row
+    cmp row_counter, ecx 
     jle NewRow
 
     pop ecx
@@ -407,7 +395,7 @@ menu proc
     call calcTotal
     mov total,eax
 
-    call	calcSize		; determine size of matrices
+    call	calcSize		
     
     call	InputA				; generate matrix A
     call ClrScr
