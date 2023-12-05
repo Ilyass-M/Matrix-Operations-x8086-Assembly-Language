@@ -14,6 +14,7 @@ include macros.inc
     total       DWORD ?
     input       DWORD ?
     Trace_var       DWORD ?
+    Result DWORD ?
 
     working_row DWORD 0    ; (0=1st row, 12=2nd row, 24=3rd row)
     working_col DWORD 0    ; (0=1st col, 4=2nd col, 8=3rd col)
@@ -374,6 +375,84 @@ NewCol:
 ret
 Trace Endp
 
+find_Determinant_3 Proc Matrix: DWORD
+
+    mov esi, Matrix
+    mov result, 0
+
+    mov eax, [esi+16]           ; Load a11
+    imul eax, [esi + 32]       ; Multiply by a22
+    mov ecx, eax
+    mov eax, [esi+20]
+    imul eax, [esi+28]
+    sub ecx, eax
+    mov eax, ecx
+    imul eax, [esi]
+    mov result, eax
+
+    mov eax, [esi + 4]       ; Load a12
+    imul eax, [esi + 32]       ; Multiply by a23
+    mov ecx, eax
+    mov eax, [esi+8]
+    imul eax, [esi + 28]      ; Multiply by a32
+    sub ecx, eax
+    mov eax, ecx
+    imul eax, [esi+12]
+    sub result, eax        ; Add to the result
+
+
+    mov eax, [esi + 4]       ; Load a13
+    imul eax, [esi + 20]       ; Multiply by a21
+    mov ecx, eax
+    mov eax, [esi + 8]      ; Multiply by a31
+    imul eax, [esi+16]
+    sub ecx, eax
+    mov eax, ecx
+    imul eax, [esi+24]
+    add result, eax
+    
+    mov eax, result
+    mwrite "The Determinant of Matrix is: "
+    call Writeint
+    ret 
+find_Determinant_3 endp
+
+
+
+find_Determinant_2 Proc Matrix: DWORD
+; Calculation 2x2 Determinant by ad-bc
+
+cmp matrix_size, 2
+JB L1
+INVOKE find_Determinant_3, Matrix     ; 3x3 Matrix Multiplicator
+ret
+
+L1:              ;2x2Matrix
+mov eax, 0
+mov esi ,  Matrix
+mov eax, [esi]
+mov ebx, [esi+12]
+mul ebx
+
+mov ecx, eax
+
+mov eax, 0
+mov eax, [esi+4]
+mov ebx, [esi+8]
+mul ebx
+
+sub ecx, eax
+
+mwrite "The Determinant of the Matrix is: "
+
+mov eax, ecx
+call writeint
+
+
+
+ret 
+find_Determinant_2 endp
+
 menu proc
 
     call	Clrscr
@@ -430,7 +509,15 @@ menu proc
     call Crlf
     mwrite "Option: 4, Calculate Trace"
     call crlf
-    mwrite "Option: 5, Exit"
+
+    cmp matrix_size, 2
+    JA NOT2D
+    mwrite "Option: 5, Other 3x3 Matrix Operation"
+    call crlf
+
+    NOT2D:
+
+    mwrite "Option: 6, Exit"
     call crlf
 
     mwrite"Enter Choice:  "
@@ -450,7 +537,43 @@ menu proc
 
     cmp input, 4
     JE Traces
-     
+
+    cmp input,5 
+    JNE END1        ; Calculate Determinant
+    cmp matrix_size, 2
+    JA Deter_Not_valid
+    mwrite "Option: 1, Calculate Determinant"
+    call crlf
+    mwrite "Option: 2, Calculate Traspose"
+    call crlf
+    call readdec
+
+    cmp eax, 1
+    JNE transpose
+
+    mwrite"Matrix A: "
+    INVOKE find_Determinant_2,ADDR MatA
+    call crlf
+    mwrite"Matrix B: "
+    INVOKE find_Determinant_2,ADDR MatB
+    call crlf
+    ; call Functions for the determinant and Transpose
+    jmp EndofProc
+   
+   
+    
+    transpose:
+  ;<--------------------- ; Call Transpose Function Here ; --------------------->>> 
+
+
+    Deter_Not_valid:
+    mwrite"Not A 3x3 Matrix"
+    Jmp EndofProc
+    
+    JMP check1
+    
+    check1:
+
     jmp END1
 
     Multiplicator:
