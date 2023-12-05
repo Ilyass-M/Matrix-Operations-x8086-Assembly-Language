@@ -374,6 +374,34 @@ NewCol:
 ret
 Trace Endp
 
+find_Determinant_2 Proc Matrix: DWORD
+; Calculation 2x2 Determinant by ad-bc
+
+mov eax, 0
+mov esi ,  Matrix
+mov eax, [esi]
+mov ebx, [esi+12]
+mul ebx
+
+mov ecx, eax
+
+mov eax, 0
+mov eax, [esi+4]
+mov ebx, [esi+8]
+mul ebx
+
+sub ecx, eax
+
+mwrite "The Determinant of the Matrix is: "
+
+mov eax, ecx
+call writeint
+
+
+
+ret 
+find_Determinant_2 endp
+
 menu proc
 
     call	Clrscr
@@ -432,12 +460,13 @@ menu proc
     call crlf
 
     cmp matrix_size, 2
-    JA TwoDim 
-    mwrite"5.Calculate Determinant of Matrix A and Matrix B"
+    JA NOT2D
+    mwrite "Option: 5, Other 3x3 Matrix Operation"
+    call crlf
 
-    TwoDim :
+    NOT2D:
 
-    mwrite "Option: 5, Exit"
+    mwrite "Option: 6, Exit"
     call crlf
 
     mwrite"Enter Choice:  "
@@ -459,15 +488,35 @@ menu proc
     JE Traces
 
     cmp input,5 
-    ;JE CheckForDim        ; Calculate Determinant
-    JMP Deter_Not_valid
+    JNE END1        ; Calculate Determinant
     cmp matrix_size, 2
     JA Deter_Not_valid
-    ; Call Function for Deteminant
+    mwrite "Option: 1, Calculate Determinant"
+    call crlf
+    mwrite "Option: 2, Calculate Traspose"
+    call crlf
+    call readdec
 
-    jmp check1
+    cmp eax, 1
+    JNE transpose
+    mwrite"Matrix A: "
+    INVOKE find_Determinant_2,ADDR MatA
+    call crlf
+    mwrite"Matrix B: "
+    INVOKE find_Determinant_2,ADDR MatB
+    call crlf
+    ; call Functions for the determinant and Transpose
+    jmp EndofProc
+    
+    
+    transpose:
+  ;<--------------------- ; Call Transpose Function Here ; --------------------->>> 
+
+
     Deter_Not_valid:
-    mwrite"Determinant Not Valid For "
+    mwrite"Not A 3x3 Matrix"
+    Jmp EndofProc
+    
     JMP check1
     
     check1:
