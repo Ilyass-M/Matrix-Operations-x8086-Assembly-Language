@@ -380,8 +380,8 @@ find_Determinant_3 Proc Matrix: DWORD
     mov esi, Matrix
     mov result, 0
 
-    mov eax, [esi+16]           ; Load a11
-    imul eax, [esi + 32]       ; Multiply by a22
+    mov eax, [esi+16]          
+    imul eax, [esi + 32]    
     mov ecx, eax
     mov eax, [esi+20]
     imul eax, [esi+28]
@@ -390,21 +390,21 @@ find_Determinant_3 Proc Matrix: DWORD
     imul eax, [esi]
     mov result, eax
 
-    mov eax, [esi + 4]       ; Load a12
-    imul eax, [esi + 32]       ; Multiply by a23
+    mov eax, [esi + 4]      
+    imul eax, [esi + 32]       
     mov ecx, eax
     mov eax, [esi+8]
-    imul eax, [esi + 28]      ; Multiply by a32
+    imul eax, [esi + 28]      
     sub ecx, eax
     mov eax, ecx
     imul eax, [esi+12]
-    sub result, eax        ; Add to the result
+    sub result, eax     
 
 
-    mov eax, [esi + 4]       ; Load a13
-    imul eax, [esi + 20]       ; Multiply by a21
+    mov eax, [esi + 4]      
+    imul eax, [esi + 20]      
     mov ecx, eax
-    mov eax, [esi + 8]      ; Multiply by a31
+    mov eax, [esi + 8]     
     imul eax, [esi+16]
     sub ecx, eax
     mov eax, ecx
