@@ -251,83 +251,83 @@ multiplymatrix ENDP
 
 AddMatrix PROC
 
-push ebp
-mov ebp, esp
-mov ecx, matrix_size
+    push ebp
+    mov ebp, esp
+    mov ecx, matrix_size
 
-mov esi,[ebp+12] 
-mov edi,[ebp+8]  
-
-call Crlf
-
-mov row_counter, 0 
-
-NewRow:
-    mov col_counter, 0 
-
-NewCol:
-
-    mov eax, [esi]
-    add eax, [edi]
-
-    call printvalue 
-
-    add esi, 4 
-    add edi, 4
-
-    inc col_counter
-
-    cmp col_counter, ecx
-    jle NewCol
+    mov esi,[ebp+12] 
+    mov edi,[ebp+8]  
 
     call Crlf
-    inc row_counter 
 
-    cmp row_counter, ecx 
-    jle NewRow
+    mov row_counter, 0 
 
-pop ebp
-ret 8
+    NewRow:
+        mov col_counter, 0 
+
+    NewCol:
+
+        mov eax, [esi]
+        add eax, [edi]
+
+        call printvalue 
+
+        add esi, 4 
+        add edi, 4
+
+        inc col_counter
+
+        cmp col_counter, ecx
+        jle NewCol
+
+        call Crlf
+        inc row_counter 
+
+        cmp row_counter, ecx 
+        jle NewRow
+
+    pop ebp
+    ret 8
 AddMatrix ENDP
 
 SubMatrix PROC
 
-push ebp
-mov ebp, esp
-mov ecx, matrix_size
+    push ebp
+    mov ebp, esp
+    mov ecx, matrix_size
 
-mov esi,[ebp+12]
-mov edi,[ebp+8] 
-call Crlf
-
-mov row_counter, 0 
-
-NewRow:
-    mov col_counter, 0 
-
-NewCol:
-
-    mov eax, [esi]
-    sub eax, [edi]
-
-    call printvalue 
-
-    add esi, 4 
-    add edi, 4
-
-    inc col_counter
-
-    cmp col_counter, ecx
-    jle NewCol
-
+    mov esi,[ebp+12]
+    mov edi,[ebp+8] 
     call Crlf
-    inc row_counter 
 
-    cmp row_counter, ecx 
-    jle NewRow
+    mov row_counter, 0 
 
-pop ebp
-ret 8
+    NewRow:
+        mov col_counter, 0 
+
+    NewCol:
+
+        mov eax, [esi]
+        sub eax, [edi]
+
+        call printvalue 
+
+        add esi, 4 
+        add edi, 4
+
+        inc col_counter
+
+        cmp col_counter, ecx
+        jle NewCol
+
+        call Crlf
+        inc row_counter 
+
+        cmp row_counter, ecx 
+        jle NewRow
+
+    pop ebp
+    ret 8
 SubMatrix ENDP
 
 Trace Proc Matrix : DWORD
@@ -420,38 +420,75 @@ find_Determinant_3 endp
 
 
 find_Determinant_2 Proc Matrix: DWORD
+
 ; Calculation 2x2 Determinant by ad-bc
 
-cmp matrix_size, 2
-JB L1
-INVOKE find_Determinant_3, Matrix     ; 3x3 Matrix Multiplicator
-ret
+    cmp matrix_size, 2
+    JB L1
+    INVOKE find_Determinant_3, Matrix     ; 3x3 Matrix Multiplicator
+    ret
 
-L1:              ;2x2Matrix
-mov eax, 0
-mov esi ,  Matrix
-mov eax, [esi]
-mov ebx, [esi+12]
-mul ebx
+    L1:              ;2x2Matrix
+    mov eax, 0
+    mov esi ,  Matrix
+    mov eax, [esi]
+    mov ebx, [esi+12]
+    mul ebx
 
-mov ecx, eax
+    mov ecx, eax
 
-mov eax, 0
-mov eax, [esi+4]
-mov ebx, [esi+8]
-mul ebx
+    mov eax, 0
+    mov eax, [esi+4]
+    mov ebx, [esi+8]
+    mul ebx
 
-sub ecx, eax
+    sub ecx, eax
 
-mwrite "The Determinant of the Matrix is: "
+    mwrite "The Determinant of the Matrix is: "
 
-mov eax, ecx
-call writeint
-
-
+    mov eax, ecx
+    call writeint
 
 ret 
 find_Determinant_2 endp
+
+DisplayTranspose PROC Matrix : DWORD
+
+    mov ecx, matrix_size
+
+    call Crlf 
+    mov row_counter, 0 
+
+
+    NewRow:
+        mov col_counter, 0 
+
+        mov ebx, 4
+        mov eax, row_counter
+        mul ebx
+
+        mov esi, Matrix
+        add esi, eax
+
+    NewCol:
+
+        mov eax, [esi]
+        call printvalue 
+        add esi, nextRow 
+
+        inc col_counter
+        cmp col_counter, ecx 
+        jle NewCol 
+
+        call Crlf
+        inc row_counter
+        cmp row_counter, ecx 
+        jle NewRow
+
+        ret
+
+DisplayTranspose ENDP
+
 
 menu proc
 
@@ -466,7 +503,6 @@ menu proc
     
     push 4
     push matrix_size
-    
     call calcNextRow
     mov nextRow,eax
     
@@ -501,26 +537,35 @@ menu proc
 
     ; Matrix operation options
     call crlf 
+    
     mwrite "Option: 1, Matrix Multiplications"
     call crlf
+    
     mwrite "Option: 2, Matrix Addition"
     call crlf
+    
     mwrite "Option: 3, Matrix Subtraction"
     call Crlf
+    
     mwrite "Option: 4, Calculate Trace"
+    call crlf
+
+    mwrite "Option: 5, Display Transpose"
     call crlf
 
     cmp matrix_size, 2
     JA NOT2D
-    mwrite "Option: 5, Other 3x3 Matrix Operation"
+
+    mwrite "Option: 6, Calculate Determinant"
     call crlf
 
     NOT2D:
 
-    mwrite "Option: 6, Exit"
+    mwrite "Option: 7, Exit"
+    call crlf
     call crlf
 
-    mwrite"Enter Choice:  "
+    mwrite "Enter Choice:  "
     call readint
     mov input, eax
 
@@ -538,43 +583,42 @@ menu proc
     cmp input, 4
     JE Traces
 
-    cmp input,5 
-    JNE END1        ; Calculate Determinant
-    cmp matrix_size, 2
-    JA Deter_Not_valid
-    mwrite "Option: 1, Calculate Determinant"
-    call crlf
-    mwrite "Option: 2, Calculate Traspose"
-    call crlf
-    call readdec
+    cmp input, 5
+    JE Transpose
 
-    cmp eax, 1
-    JNE transpose
+    cmp input, 6
+    JNE END1        ; Calculate Determinant
+
+    cmp matrix_size, 2
+    JA EndofProc
+
 
     mwrite"Matrix A: "
     INVOKE find_Determinant_2,ADDR MatA
     call crlf
+
     mwrite"Matrix B: "
     INVOKE find_Determinant_2,ADDR MatB
     call crlf
-    ; call Functions for the determinant and Transpose
+
     jmp EndofProc
    
    
     
-    transpose:
-  ;<--------------------- ; Call Transpose Function Here ; --------------------->>> 
-
-
-    Deter_Not_valid:
-    mwrite"Not A 3x3 Matrix"
-    Jmp EndofProc
+    Transpose:
     
-    JMP check1
-    
-    check1:
+    mwrite "Transpose Of Matrix A: "
+    call crlf
+    INVOKE DisplayTranspose,ADDR MatA
+    call crlf
 
-    jmp END1
+    mwrite "Transpose Of Matrix B: "
+    call crlf
+    INVOKE DisplayTranspose,ADDR MatB
+    call crlf
+    call crlf
+
+    jmp EndofProc
 
     Multiplicator:
     call	multiplymatrix
