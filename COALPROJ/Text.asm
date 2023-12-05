@@ -430,6 +430,13 @@ menu proc
     call Crlf
     mwrite "Option: 4, Calculate Trace"
     call crlf
+
+    cmp matrix_size, 2
+    JA TwoDim 
+    mwrite"5.Calculate Determinant of Matrix A and Matrix B"
+
+    TwoDim :
+
     mwrite "Option: 5, Exit"
     call crlf
 
@@ -450,7 +457,21 @@ menu proc
 
     cmp input, 4
     JE Traces
-     
+
+    cmp input,5 
+    ;JE CheckForDim        ; Calculate Determinant
+    JMP Deter_Not_valid
+    cmp matrix_size, 2
+    JA Deter_Not_valid
+    ; Call Function for Deteminant
+
+    jmp check1
+    Deter_Not_valid:
+    mwrite"Determinant Not Valid For "
+    JMP check1
+    
+    check1:
+
     jmp END1
 
     Multiplicator:
